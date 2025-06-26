@@ -3,12 +3,9 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
-
-// Middlewares básicos
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Logging de respuestas API
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
@@ -29,7 +26,7 @@ app.use((req, res, next) => {
       }
 
       if (logLine.length > 80) {
-        logLine = logLine.slice(0, 79) + "...";
+        logLine = logLine.slice(0, 79) + "…";
       }
 
       log(logLine);
@@ -42,7 +39,6 @@ app.use((req, res, next) => {
 (async () => {
   const server = await registerRoutes(app);
 
-  // Middleware global para manejo de errores
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -50,17 +46,15 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  // Solo usar Vite en desarrollo
   if (app.get("env") === "development") {
     await setupVite(app, server);
   } else {
-    serveStatic(app); // Servir frontend desde dist/
+    serveStatic(app);
   }
 
-  // Usar puerto dinámico para entornos como Render
   const port = Number(process.env.PORT) || 5000;
-  server.listen(
-    { port, host: "0.0.0.0" },
-    () => log(`Server running on port ${port}`)
-  );
+  server.listen({ port, host: "0.0.0.0", reusePort: true }, () => {
+    log(`serving on port ${port}`);
+  });
 })();
+
