@@ -1,0 +1,3 @@
+"id","email","first_name","last_name","profile_image_url","role","is_active","rut","phone","address","created_at","updated_at"
+"43937057","edward@notarypro.cl","edward","venegas",,"superadmin","true",,,,"""2025-06-17T13:28:34.994Z""","""2025-06-24T01:49:48.561Z"""
+"admin_test_001","admin@notarypro.cl","Admin","Sistema",,"superadmin","true",,,,"""2025-06-23T07:34:01.282Z""","""2025-06-23T07:34:01.282Z"""
