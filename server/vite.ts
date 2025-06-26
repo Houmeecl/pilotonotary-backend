@@ -1,13 +1,23 @@
 import express, { type Express } from "express";
 import fs from "fs";
-import path, { dirname, resolve } from "path";
+import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
-import { fileURLToPath } from "url";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
 
 const viteLogger = createLogger();
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const __dirname = path.resolve();
+
+export function log(message: string, source = "express") {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+
+  console.log(`${formattedTime} [${source}] ${message}`);
+}
 
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
@@ -17,7 +27,7 @@ export async function setupVite(app: Express, server: Server) {
   };
 
   const vite = await createViteServer({
-    configFile: resolve(__dirname, "..", "vite.config.ts"),
+    configFile: path.resolve(__dirname, "vite.config.ts"),
     customLogger: {
       ...viteLogger,
       error: (msg, options) => {
@@ -33,7 +43,7 @@ export async function setupVite(app: Express, server: Server) {
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
     try {
-      const clientTemplate = resolve(__dirname, "..", "client", "index.html");
+      const clientTemplate = path.resolve(__dirname, "client", "index.html");
       let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
