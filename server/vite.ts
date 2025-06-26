@@ -6,22 +6,18 @@ import { fileURLToPath } from "url";
 import { type Server } from "http";
 import { nanoid } from "nanoid";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
 const viteLogger = createLogger();
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export async function setupVite(app: Express, server: Server) {
-  if (process.env.NODE_ENV === "production") {
-    throw new Error("setupVite debe ejecutarse solo en desarrollo");
-  }
+  const serverOptions = {
+    middlewareMode: true,
+    hmr: { server },
+    allowedHosts: true,
+  };
 
   const vite = await createViteServer({
     configFile: resolve(__dirname, "..", "vite.config.ts"),
-    server: {
-      middlewareMode: true,
-      hmr: { server },
-      allowedHosts: true,
-    },
-    appType: "custom",
     customLogger: {
       ...viteLogger,
       error: (msg, options) => {
@@ -29,14 +25,16 @@ export async function setupVite(app: Express, server: Server) {
         process.exit(1);
       },
     },
+    server: serverOptions,
+    appType: "custom",
   });
 
   app.use(vite.middlewares);
   app.use("*", async (req, res, next) => {
     const url = req.originalUrl;
     try {
-      const templatePath = resolve(__dirname, "..", "client", "index.html");
-      let template = await fs.promises.readFile(templatePath, "utf-8");
+      const clientTemplate = resolve(__dirname, "..", "client", "index.html");
+      let template = await fs.promises.readFile(clientTemplate, "utf-8");
       template = template.replace(
         `src="/src/main.tsx"`,
         `src="/src/main.tsx?v=${nanoid()}"`
@@ -49,4 +47,3 @@ export async function setupVite(app: Express, server: Server) {
     }
   });
 }
-
