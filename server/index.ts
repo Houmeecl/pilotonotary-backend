@@ -14,6 +14,7 @@ const isDev = process.env.NODE_ENV !== "production";
   } else {
     serveStatic(app);
   }
+
   await registerRoutes(app);
   server.listen(process.env.PORT || 3000, () => {
     console.log(`Server listening on port ${process.env.PORT || 3000}`);
