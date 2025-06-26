@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
-    "build": "esbuild server/index.ts --outfile=dist/index.cjs --platform=node --bundle --format=cjs",
+    "build": "esbuild server/index.ts --outfile=dist/index.cjs --platform=node --format=cjs --bundle --external:esbuild --external:lightningcss --external:bufferutil",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
     "db:push": "drizzle-kit push",
@@ -21,7 +21,6 @@
     "memoizee": "^0.4.17",
     "memorystore": "^1.6.7",
     "nanoid": "^5.0.2",
-    "vite": "^5.4.14",
     "openid-client": "^6.5.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
